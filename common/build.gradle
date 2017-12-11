@@ -1,4 +1,4 @@
-group 'pl.edu.agh.eaiib.io.sp'
+group
 version '1.0-SNAPSHOT'
 
 buildscript {
