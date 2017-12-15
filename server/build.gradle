@@ -2,6 +2,8 @@ buildscript {
 	ext {
 		kotlinVersion = '1.1.61'
 		springBootVersion = '2.0.0.M7'
+		junitPlatformVersion = '1.0.2'
+		junitJupiterVersion = '5.0.2'
 	}
 	repositories {
 		mavenCentral()
@@ -12,6 +14,7 @@ buildscript {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
 		classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
 		classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
+        classpath("org.junit.platform:junit-platform-gradle-plugin:${junitPlatformVersion}")
 	}
 }
 
@@ -20,6 +23,7 @@ apply plugin: 'kotlin-spring'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.junit.platform.gradle.plugin'
 
 group = 'pl.edu.agh.eaiib.io'
 version = '0.0.1-SNAPSHOT'
@@ -43,6 +47,9 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-webflux')
 	compile("org.jetbrains.kotlin:kotlin-stdlib-jre8")
 	compile("org.jetbrains.kotlin:kotlin-reflect")
+	compile project(':common')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('io.projectreactor:reactor-test')
+    testCompile "org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion"
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion"
 }
