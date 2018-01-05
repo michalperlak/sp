@@ -1,7 +1,8 @@
-package pl.edu.agh.eaiib.io.sp
+package pl.edu.agh.eaiib.io.sp.android
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import pl.edu.agh.eaiib.io.sp.R
 
 class MainActivity : AppCompatActivity() {
 
