@@ -2,7 +2,6 @@ package pl.edu.agh.eaiib.io.sp.data.publish
 
 import pl.edu.agh.eaiib.io.sp.common.SensorData
 import pl.edu.agh.eaiib.io.sp.config.Configuration
-import pl.edu.agh.eaiib.io.sp.data.SensorDataPack
 import pl.edu.agh.eaiib.io.sp.rest.SensorApi
 import java.util.concurrent.ConcurrentLinkedQueue
 
@@ -11,10 +10,6 @@ class SensorDataPublisher(private val sensorApi: SensorApi,
 
     private val publishQueue = ConcurrentLinkedQueue<SensorData>()
     private var publishEnabled = true
-
-    fun publishData(dataPack: SensorDataPack) {
-        //TODO implement
-    }
 
     fun startPublishingData() {
         publishEnabled = true
