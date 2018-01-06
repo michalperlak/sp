@@ -1,8 +1,9 @@
 package pl.edu.agh.eaiib.io.sp
 
 import android.hardware.SensorManager
-import pl.edu.agh.eaiib.io.sp.data.SensorDataCollector
+import pl.edu.agh.eaiib.io.sp.android.AndroidNetworkHelper
 import pl.edu.agh.eaiib.io.sp.config.Configuration
+import pl.edu.agh.eaiib.io.sp.data.SensorDataCollector
 import pl.edu.agh.eaiib.io.sp.data.publish.SensorDataPublisher
 import pl.edu.agh.eaiib.io.sp.rest.SensorApi
 
@@ -14,6 +15,11 @@ class SensorDataService(sensorManager: SensorManager, config: Configuration) {
         val sensorApi = SensorApi.create(config.serverBaseUrl)
         dataPublisher = SensorDataPublisher(sensorApi, config)
         dataCollector = SensorDataCollector(sensorManager, dataPublisher, config)
+
+        val networkHelper = ServicesUtil.getService(AndroidNetworkHelper::class.java)
+        networkHelper.addNetworkStateListener(dataPublisher)
+
+        ServicesUtil.registerService(this)
     }
 
     fun startCollectingData() = dataCollector.startCollectingData()
