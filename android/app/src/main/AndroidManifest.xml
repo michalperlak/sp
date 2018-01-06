@@ -17,8 +17,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name="pl.edu.agh.eaiib.io.sp.SensorService"
-            android:enabled="true" >
-        </service>
+            android:name="pl.edu.agh.eaiib.io.sp.android.SensorService"
+            android:enabled="true" />
     </application>
 </manifest>
