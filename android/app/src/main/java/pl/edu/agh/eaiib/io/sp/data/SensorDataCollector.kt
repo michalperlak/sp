@@ -57,6 +57,6 @@ class DefaultSensorEventHandler(private val dataCollector: SensorDataCollector) 
     }
 
     private fun convertToSensorData(sensorEvent: SensorEvent): SensorData {
-        return SensorData(sensorEvent.sensor.type, sensorEvent.values.toList(), sensorEvent.timestamp)
+        return SensorData(Configuration.deviceId, sensorEvent.sensor.type, sensorEvent.values.toList(), sensorEvent.timestamp)
     }
 }

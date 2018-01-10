@@ -9,5 +9,7 @@ object Configuration {
             Sensor.TYPE_GYROSCOPE,
             Sensor.TYPE_LINEAR_ACCELERATION,
             Sensor.TYPE_GRAVITY)
+
+    var deviceId = ""
 }
 

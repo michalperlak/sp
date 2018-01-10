@@ -14,6 +14,7 @@ class SensorService : Service() {
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
+        Configuration.deviceId = getDeviceID(this)
         registerAndroidHelper()
         registerSensorDataService()
         sensorDataService?.startCollectingData()
@@ -42,7 +43,7 @@ class SensorService : Service() {
     }
 
     private fun unregisterAndroidHelper() {
-        if (androidNetworkHelper != null) {
+        if (androidNetworkHelper == null) {
             return
         }
 
@@ -56,7 +57,7 @@ class SensorService : Service() {
     }
 
     private fun unregisterSensorDataService() {
-        if (sensorDataService != null) {
+        if (sensorDataService == null) {
             return
         }
 
