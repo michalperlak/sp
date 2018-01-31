@@ -5,15 +5,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
-import pl.edu.agh.eaiib.io.sp.ServicesUtil
 import java.util.concurrent.CopyOnWriteArrayList
 
 class AndroidNetworkHelper(private val context: Context) {
     private val androidNetworkAvailabilityListener = AndroidNetworkAvailabilityListener(this, context)
-
-    init {
-        ServicesUtil.registerService(this)
-    }
 
     fun isNetworkAvailable(): Boolean {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

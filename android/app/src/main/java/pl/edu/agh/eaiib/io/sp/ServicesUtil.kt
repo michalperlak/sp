@@ -21,7 +21,7 @@ object ServicesUtil {
         val serviceClass = service.javaClass.canonicalName ?: throw IllegalArgumentException("Service class does not have canonical name")
         val value = services.putIfAbsent(serviceClass, service)
 
-        if (value != service) {
+        if (value != null) {
             throw IllegalStateException("Service with class $serviceClass already registered")
         }
     }

@@ -18,7 +18,6 @@ class SensorDataPublisher(config: Configuration) : NetworkAvailabilityListener {
     private val executor: Executor = Executors.newSingleThreadExecutor { runnable ->
         val thread = Thread(runnable)
         thread.isDaemon = true
-
         thread
     }
 

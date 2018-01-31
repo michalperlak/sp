@@ -15,8 +15,6 @@ class SensorDataService(sensorManager: SensorManager, config: Configuration) {
 
         val networkHelper = ServicesUtil.getService(AndroidNetworkHelper::class.java)
         networkHelper.addNetworkStateListener(dataPublisher)
-
-        ServicesUtil.registerService(this)
     }
 
     fun startCollectingData() = dataCollector.startCollectingData()
