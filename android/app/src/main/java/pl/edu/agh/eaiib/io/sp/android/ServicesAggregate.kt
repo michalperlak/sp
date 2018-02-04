@@ -5,13 +5,15 @@ import android.content.Intent
 import android.os.IBinder
 import org.jetbrains.anko.locationManager
 import org.jetbrains.anko.sensorManager
-import pl.edu.agh.eaiib.io.sp.SensorDataService
-import pl.edu.agh.eaiib.io.sp.ServicesUtil
 import pl.edu.agh.eaiib.io.sp.config.Configuration
+import pl.edu.agh.eaiib.io.sp.services.CommentsService
+import pl.edu.agh.eaiib.io.sp.services.SensorDataService
+import pl.edu.agh.eaiib.io.sp.services.ServicesUtil
 
-class SensorService : Service() {
+class ServicesAggregate : Service() {
     private var androidNetworkHelper: AndroidNetworkHelper? = null
     private var sensorDataService: SensorDataService? = null
+    private var commentsService: CommentsService? = null
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
@@ -21,6 +23,10 @@ class SensorService : Service() {
         sensorDataService?.startCollectingData()
         sensorDataService?.startPublishingData()
 
+        registerCommentsService()
+        commentsService?.startListening()
+        commentsService?.startPublishing()
+
         return START_STICKY
     }
 
@@ -29,6 +35,10 @@ class SensorService : Service() {
         sensorDataService?.stopCollectingData()
         sensorDataService?.stopPublishingData()
 
+        commentsService?.stopListening()
+        commentsService?.stopPublishing()
+
+        unregisterCommentsService()
         unregisterSensorDataService()
         unregisterAndroidHelper()
     }
@@ -64,5 +74,19 @@ class SensorService : Service() {
         }
 
         ServicesUtil.unregisterService(sensorDataService!!)
+    }
+
+    private fun registerCommentsService() {
+        val commentsService = CommentsService(this, locationManager, Configuration)
+        ServicesUtil.registerService(commentsService)
+        this.commentsService = commentsService
+    }
+
+    private fun unregisterCommentsService() {
+        if (commentsService == null) {
+            return
+        }
+
+        ServicesUtil.unregisterService(commentsService!!)
     }
 }

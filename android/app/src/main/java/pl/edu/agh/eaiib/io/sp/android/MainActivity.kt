@@ -15,12 +15,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         requestLocationPermission()
-        startService(Intent(this, SensorService::class.java))
+        startService(Intent(this, ServicesAggregate::class.java))
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        stopService(Intent(this, SensorService::class.java))
+        stopService(Intent(this, ServicesAggregate::class.java))
     }
 
     private fun requestLocationPermission() {

@@ -1,4 +1,4 @@
-package pl.edu.agh.eaiib.io.sp
+package pl.edu.agh.eaiib.io.sp.services
 
 import java.util.concurrent.ConcurrentHashMap
 
