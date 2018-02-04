@@ -1,15 +1,23 @@
 package pl.edu.agh.eaiib.io.sp.data
 
+import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorManager
-import pl.edu.agh.eaiib.io.sp.common.SensorData
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import android.os.Bundle
+import android.util.Log
+import pl.edu.agh.eaiib.io.sp.common.model.Reading
 import pl.edu.agh.eaiib.io.sp.config.Configuration
 import pl.edu.agh.eaiib.io.sp.data.publish.SensorDataPublisher
 import pl.edu.agh.eaiib.io.sp.sensor.AndroidSensorEventHandlerAdapter
 import java.util.concurrent.ConcurrentHashMap
+import pl.edu.agh.eaiib.io.sp.common.model.Location as ModelLocation
 
 class SensorDataCollector(private val sensorManager: SensorManager,
                           private val dataPublisher: SensorDataPublisher,
+                          locationManager: LocationManager,
                           config: Configuration) {
 
     private val registeredSensors = ConcurrentHashMap<Int, AndroidSensorEventHandlerAdapter>()
@@ -17,8 +25,15 @@ class SensorDataCollector(private val sensorManager: SensorManager,
 
     init {
         val sensorsToCollectData = config.sensorsToCollectData
+        val handler = DefaultSensorEventHandler(this)
         sensorsToCollectData.forEach {
-            registerSensor(it, DefaultSensorEventHandler(this))
+            registerSensor(it, handler)
+        }
+
+        try {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 0.01f, handler)
+        } catch (e: SecurityException) {
+            Log.d("SecurityException", e.localizedMessage)
         }
     }
 
@@ -26,15 +41,15 @@ class SensorDataCollector(private val sensorManager: SensorManager,
         val androidSensorEventHandler = AndroidSensorEventHandlerAdapter(sensorId, sensorEventHandler)
         val sensor = sensorManager.getDefaultSensor(sensorId)
         registeredSensors[sensorId] = androidSensorEventHandler
-        sensorManager.registerListener(androidSensorEventHandler, sensor, SensorManager.SENSOR_DELAY_GAME)
+        sensorManager.registerListener(androidSensorEventHandler, sensor, SensorManager.SENSOR_DELAY_FASTEST)
     }
 
-    fun collectData(data: SensorData) {
+    fun collectData(reading: Reading) {
         if (!collectingEnabled) {
             return
         }
 
-        dataPublisher.addToQueue(data)
+        dataPublisher.addToQueue(reading)
     }
 
     fun startCollectingData() {
@@ -50,13 +65,65 @@ interface SensorEventHandler {
     fun handle(sensorEvent: SensorEvent)
 }
 
-class DefaultSensorEventHandler(private val dataCollector: SensorDataCollector) : SensorEventHandler {
-    override fun handle(sensorEvent: SensorEvent) {
-        val data = convertToSensorData(sensorEvent)
-        dataCollector.collectData(data)
+class DefaultSensorEventHandler(private val dataCollector: SensorDataCollector) : SensorEventHandler, LocationListener {
+    private var location: ModelLocation? = null
+    private var accelerometerData: SensorData? = null
+    private var gyroscopeData: SensorData? = null
+
+    override fun onLocationChanged(location: Location?) {
+        if (location == null) {
+            return
+        }
+
+        this.location = ModelLocation(location.longitude, location.latitude)
     }
 
+    override fun handle(sensorEvent: SensorEvent) {
+        if (location == null) {
+            return
+        }
+
+        val data = convertToSensorData(sensorEvent)
+        if (data.sensorType == Sensor.TYPE_GYROSCOPE) {
+            gyroscopeData = data
+        }
+
+        if (data.sensorType == Sensor.TYPE_ACCELEROMETER) {
+            accelerometerData = data
+        }
+
+        tryCollect()
+    }
+
+    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) = Unit
+
+    override fun onProviderEnabled(provider: String?) = Unit
+
+    override fun onProviderDisabled(provider: String?) = Unit
+
     private fun convertToSensorData(sensorEvent: SensorEvent): SensorData {
-        return SensorData(Configuration.deviceId, sensorEvent.sensor.type, sensorEvent.values.toList(), sensorEvent.timestamp)
+        return SensorData(sensorEvent.sensor.type, sensorEvent.values.toList())
+    }
+
+    private fun tryCollect() {
+        val accelerometer = accelerometerData
+        val gyroscope = gyroscopeData
+        val location = this.location
+
+        if (location == null || accelerometer == null || gyroscope == null) {
+            return
+        }
+
+        val reading = Reading(Configuration.deviceId, accelerometer.values.map { it.toDouble() },
+                gyroscope.values.map { it.toDouble() }, location)
+
+        dataCollector.collectData(reading)
+
+        accelerometerData = null
+        gyroscopeData = null
+        this.location = null
     }
 }
+
+data class SensorData(val sensorType: Int,
+                      val values: List<Float>)

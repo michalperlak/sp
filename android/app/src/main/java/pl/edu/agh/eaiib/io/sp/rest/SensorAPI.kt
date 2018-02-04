@@ -1,7 +1,7 @@
 package pl.edu.agh.eaiib.io.sp.rest
 
 import io.reactivex.Flowable
-import pl.edu.agh.eaiib.io.sp.common.SensorData
+import pl.edu.agh.eaiib.io.sp.common.model.Reading
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -10,8 +10,8 @@ import retrofit2.http.POST
 
 interface SensorApi {
 
-    @POST("sensorData")
-    fun addSensorData(@Body sensorData: SensorData): Flowable<Any>
+    @POST("readings")
+    fun addReading(@Body reading: Reading): Flowable<Any>
 
     companion object Factory {
         fun create(serverBaseUrl: String): SensorApi {

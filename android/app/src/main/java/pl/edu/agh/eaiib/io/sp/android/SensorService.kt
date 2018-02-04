@@ -3,6 +3,7 @@ package pl.edu.agh.eaiib.io.sp.android
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import org.jetbrains.anko.locationManager
 import org.jetbrains.anko.sensorManager
 import pl.edu.agh.eaiib.io.sp.SensorDataService
 import pl.edu.agh.eaiib.io.sp.ServicesUtil
@@ -47,11 +48,12 @@ class SensorService : Service() {
             return
         }
 
+        androidNetworkHelper!!.unregister()
         ServicesUtil.unregisterService(androidNetworkHelper!!)
     }
 
     private fun registerSensorDataService() {
-        val sensorDataService = SensorDataService(sensorManager, Configuration)
+        val sensorDataService = SensorDataService(sensorManager, locationManager, Configuration)
         ServicesUtil.registerService(sensorDataService)
         this.sensorDataService = sensorDataService
     }

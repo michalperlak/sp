@@ -19,15 +19,20 @@ class AndroidNetworkHelper(private val context: Context) {
     fun addNetworkStateListener(listener: NetworkAvailabilityListener) {
         androidNetworkAvailabilityListener.addListener(listener)
     }
+
+    fun unregister() {
+        androidNetworkAvailabilityListener.unregister()
+    }
 }
 
 private class AndroidNetworkAvailabilityListener(private val networkHelper: AndroidNetworkHelper,
-                                                 context: Context) {
+                                                 private val context: Context) {
 
     private val listeners = CopyOnWriteArrayList<NetworkAvailabilityListener>()
+    private val receiver: BroadcastReceiver
 
     init {
-        val receiver = object : BroadcastReceiver() {
+        receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 notifyListeners()
             }
@@ -49,6 +54,10 @@ private class AndroidNetworkAvailabilityListener(private val networkHelper: Andr
         listeners.forEach {
             it.networkAvailabilityChanged(networkAvailable)
         }
+    }
+
+    fun unregister() {
+        context.unregisterReceiver(receiver)
     }
 }
 

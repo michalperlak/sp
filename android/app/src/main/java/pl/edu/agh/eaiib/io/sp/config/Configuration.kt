@@ -3,12 +3,11 @@ package pl.edu.agh.eaiib.io.sp.config
 import android.hardware.Sensor
 
 object Configuration {
-    val serverBaseUrl: String = "http://localhost:9090/sensorData/"
+    const val serverBaseUrl: String = "http://192.168.0.104:9090/api/"
+
     val sensorsToCollectData: List<Int> = listOf(
             Sensor.TYPE_ACCELEROMETER,
-            Sensor.TYPE_GYROSCOPE,
-            Sensor.TYPE_LINEAR_ACCELERATION,
-            Sensor.TYPE_GRAVITY)
+            Sensor.TYPE_GYROSCOPE)
 
     var deviceId = ""
 }

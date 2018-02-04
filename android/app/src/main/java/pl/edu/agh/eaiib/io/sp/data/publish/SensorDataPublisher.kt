@@ -1,9 +1,12 @@
 package pl.edu.agh.eaiib.io.sp.data.publish
 
+import io.reactivex.Flowable
+import org.reactivestreams.Subscriber
+import org.reactivestreams.Subscription
 import pl.edu.agh.eaiib.io.sp.ServicesUtil
 import pl.edu.agh.eaiib.io.sp.android.AndroidNetworkHelper
 import pl.edu.agh.eaiib.io.sp.android.NetworkAvailabilityListener
-import pl.edu.agh.eaiib.io.sp.common.SensorData
+import pl.edu.agh.eaiib.io.sp.common.model.Reading
 import pl.edu.agh.eaiib.io.sp.config.Configuration
 import pl.edu.agh.eaiib.io.sp.rest.SensorApi
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -13,7 +16,7 @@ import java.util.concurrent.Executors
 class SensorDataPublisher(config: Configuration) : NetworkAvailabilityListener {
 
     private val sensorApi = SensorApi.create(config.serverBaseUrl)
-    private val publishQueue = ConcurrentLinkedQueue<SensorData>()
+    private val publishQueue = ConcurrentLinkedQueue<Reading>()
 
     private val executor: Executor = Executors.newSingleThreadExecutor { runnable ->
         val thread = Thread(runnable)
@@ -40,12 +43,12 @@ class SensorDataPublisher(config: Configuration) : NetworkAvailabilityListener {
         publishEnabled = false
     }
 
-    fun addToQueue(data: SensorData) {
+    fun addToQueue(reading: Reading) {
         if (!publishEnabled) {
             return
         }
 
-        publishQueue.add(data)
+        publishQueue.add(reading)
     }
 
     override fun networkAvailabilityChanged(networkAvailable: Boolean) {
@@ -58,6 +61,7 @@ class SensorDataPublisher(config: Configuration) : NetworkAvailabilityListener {
         }
 
         val data = publishQueue.poll()
-        sensorApi.addSensorData(data)
+        val result = sensorApi.addReading(data)
+        result.subscribe()
     }
 }
