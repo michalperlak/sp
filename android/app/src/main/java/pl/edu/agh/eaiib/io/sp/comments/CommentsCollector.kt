@@ -16,7 +16,7 @@ class CommentsCollector(private val context: Context,
                         private val locationManager: LocationManager,
                         private val commentsPublisher: CommentsPublisher) : VoiceControl {
 
-    private var speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
+    private var speechRecognizer: SpeechRecognizer? = null
     private var collectingEnabled = true
 
     init {

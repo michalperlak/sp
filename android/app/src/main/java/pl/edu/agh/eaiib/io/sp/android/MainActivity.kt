@@ -15,6 +15,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         requestLocationPermission()
+        requestAudioPermission()
         startService(Intent(this, ServicesAggregate::class.java))
     }
 
@@ -33,6 +34,18 @@ class MainActivity : AppCompatActivity() {
         }
 
         requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), INITIAL_REQUEST)
+    }
+
+    private fun requestAudioPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return
+        }
+
+        if (PackageManager.PERMISSION_GRANTED == checkSelfPermission(Manifest.permission.RECORD_AUDIO)) {
+            return
+        }
+
+        requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), INITIAL_REQUEST)
     }
 }
 
