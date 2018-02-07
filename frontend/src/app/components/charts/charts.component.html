@@ -1,3 +1,54 @@
-<p>
-  charts works!
-</p>
+<div class="container">
+  <form>
+    <div class="row top-mg-20">
+      <label for="deviceIdFilter" class="col-md-2">Id urządzenia</label>
+      <select class="form-control col-md-9" id="deviceIdFilter" name="deviceIdFilter"
+              [(ngModel)]="deviceId" #deviceIdFilter="ngModel">
+        <option *ngFor="let device of devices">{{device}}</option>
+      </select>
+    </div>
+    <div class="row top-mg-20">
+      <label for="startDateFilter" class="col-md-2">Data początkowa</label>
+      <input type="datetime-local" class="form-control col-md-9" id="startDateFilter" name="startDateFilter"
+             [(ngModel)]="startDate" #startDateFilter="ngModel">
+    </div>
+    <div class="row top-mg-20">
+      <label for="endDateFilter" class="col-md-2">Data końcowa</label>
+      <input type="datetime-local" class="form-control col-md-9" id="endDateFilter" name="endDateFilter"
+             [(ngModel)]="endDate" #endDateFilter="ngModel">
+    </div>
+    <div class="row top-mg-20">
+      <button class="btn btn-secondary offset-10"
+              (click)="updateCharts()">Zatwierdź
+      </button>
+    </div>
+  </form>
+</div>
+
+<!--<div class="row">-->
+  <!--<div class="offset-2 col-md-8">-->
+    <!--<div style="display: block;">-->
+      <!--<canvas baseChart-->
+              <!--[datasets]="lineChartData"-->
+              <!--[labels]="lineChartLabels"-->
+              <!--[options]="{responsive: true}"-->
+              <!--[legend]="true"-->
+              <!--[chartType]="'line'"></canvas>-->
+    <!--</div>-->
+  <!--</div>-->
+<!--</div>-->
+
+<div class="row" *ngFor="let chart of charts; let i = index" [attr.data-index]="i">
+  <div class="offset-2 col-md-8">
+    {{i}}
+    <div style="display: block;">
+      <canvas baseChart
+              [datasets]="chart"
+              [labels]="timestamps"
+              [colors]="getColors(i)"
+              [options]="{responsive: true}"
+              [legend]="true"
+              [chartType]="'line'"></canvas>
+    </div>
+  </div>
+</div>

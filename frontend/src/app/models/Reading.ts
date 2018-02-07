@@ -1,7 +1,10 @@
+import {Location} from "./Location";
+
 export class Reading {
   constructor(public deviceId: string,
-              public gyroscopeData: Array<number>,
-              public accelerometerData: Array<number>,
-              public location: Location) {
+              public gyroscope: Array<number>,
+              public accelerometer: Array<number>,
+              public location: Location,
+              public timestamp: number) {
   }
 }
