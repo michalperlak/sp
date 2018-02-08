@@ -25,22 +25,8 @@
   </form>
 </div>
 
-<!--<div class="row">-->
-  <!--<div class="offset-2 col-md-8">-->
-    <!--<div style="display: block;">-->
-      <!--<canvas baseChart-->
-              <!--[datasets]="lineChartData"-->
-              <!--[labels]="lineChartLabels"-->
-              <!--[options]="{responsive: true}"-->
-              <!--[legend]="true"-->
-              <!--[chartType]="'line'"></canvas>-->
-    <!--</div>-->
-  <!--</div>-->
-<!--</div>-->
-
 <div class="row" *ngFor="let chart of charts; let i = index" [attr.data-index]="i">
   <div class="offset-2 col-md-8">
-    {{i}}
     <div style="display: block;">
       <canvas baseChart
               [datasets]="chart"
