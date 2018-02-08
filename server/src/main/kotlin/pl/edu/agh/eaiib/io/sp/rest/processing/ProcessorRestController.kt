@@ -12,4 +12,16 @@ class ProcessorRestController(private val processorService: ProcessorService) {
     fun process() {
         processorService.processData()
     }
+
+    @GetMapping("/test")
+    @ResponseStatus(HttpStatus.OK)
+    fun processTest() {
+        processorService.processData("87e1e1fd70a3bb9d", 1518111300000)
+    }
+
+    @GetMapping("/cleanbase")
+    @ResponseStatus(HttpStatus.OK)
+    fun cleanBase() {
+        processorService.clean();
+    }
 }
