@@ -91,8 +91,8 @@ private fun createAttributes(): ArrayList<Attribute> = arrayListOf(
         Attribute("entropy"),
         Attribute("quality", listOf("1", "2", "3")))
 
-private const val MIN_RANDOM_READ = 10.0
-private const val MAX_RANDOM_READ = 12.5
+private const val MIN_RANDOM_READ = 7.5
+private const val MAX_RANDOM_READ = 9.0
 
 private const val HIGHEST_RATE_THRESHOLD = 9.0
 private const val AVERAGE_RATE_THRESHOLD = 6.0
