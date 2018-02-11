@@ -9,8 +9,11 @@ import pl.edu.agh.eaiib.io.sp.service.ProcessorService
 class ProcessorRestController(private val processorService: ProcessorService) {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    fun process() {
-        processorService.processData()
+    fun process(@RequestParam deviceId: String,
+                @RequestParam startTimestamp: Long,
+                @RequestParam endTimestamp: Long) {
+
+        processorService.processData(deviceId, startTimestamp, endTimestamp)
     }
 
     @GetMapping("/test")
@@ -22,6 +25,6 @@ class ProcessorRestController(private val processorService: ProcessorService) {
     @GetMapping("/cleanbase")
     @ResponseStatus(HttpStatus.OK)
     fun cleanBase() {
-        processorService.clean();
+        processorService.clean()
     }
 }
