@@ -12,12 +12,17 @@ import weka.core.Instances
 import weka.core.converters.ConverterUtils
 import weka.classifiers.Classifier as WekaClassifier
 import weka.classifiers.functions.supportVector.RBFKernel
+import weka.core.DenseInstance
 
 
 @Component
 class DataAnalyzer(private val classifier: Classifier) {
 
     fun process(readings: Sequence<Reading>): List<ProcessedData> {
+        if (!readings.iterator().hasNext()) {
+            return emptyList()
+        }
+
         val dataWindow = createDataWindow(readings)
         val quality = classifier.classify(dataWindow)
         return listOf(ProcessedData(dataWindow.startLocation, quality.rate), ProcessedData(dataWindow.endLocation, quality.rate))
@@ -33,7 +38,10 @@ class ClassifierConfiguration {
     var kernelGammaFactor: Double = 0.01
 
     @Bean
-    fun getClassifier(): Classifier = Classifier(buildClassifier(getTrainingSet()))
+    fun getClassifier(): Classifier {
+        val instances = getTrainingSet()
+        return Classifier(buildClassifier(instances), instances)
+    }
 
     private fun buildClassifier(trainingSet: Instances): WekaClassifier {
         val classifier = SMO()
@@ -54,10 +62,25 @@ class ClassifierConfiguration {
     }
 }
 
-class Classifier(val wekaClassifier: WekaClassifier) {
+class Classifier(private val wekaClassifier: WekaClassifier,
+                 private val dataSet: Instances) {
 
     fun classify(dataWindow: DataWindow): QualityLabel {
-        return QualityLabel.AVERAGE //tODO
+        val instance = DenseInstance(7)
+        instance.setDataset(dataSet)
+        instance.setValue(0, dataWindow.features.mean)
+        instance.setValue(1, dataWindow.features.absMean)
+        instance.setValue(2, dataWindow.features.variance)
+        instance.setValue(3, dataWindow.features.minMaxAbsSum)
+        instance.setValue(4, dataWindow.features.energy)
+        instance.setValue(5, dataWindow.features.entropy)
+
+        val rate = wekaClassifier.classifyInstance(instance).toInt()
+        return when (rate) {
+            in 3..Int.MAX_VALUE -> QualityLabel.GOOD
+            in 2 until 3 -> QualityLabel.AVERAGE
+            else -> QualityLabel.BAD
+        }
     }
 }
 

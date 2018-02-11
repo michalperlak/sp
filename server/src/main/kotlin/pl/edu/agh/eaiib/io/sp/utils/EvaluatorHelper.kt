@@ -13,7 +13,7 @@ fun evaluate(accRead: Double, min: Double, max: Double): Int {
 }
 
 private fun getConditionEvaluator(accRead: Double, min: Double, max: Double): (Int) -> Boolean {
-    val diff = if (accRead <= EARTH_ACCELERATION) EARTH_ACCELERATION - min else max - EARTH_ACCELERATION
+    val diff = Math.abs(if (accRead <= EARTH_ACCELERATION) EARTH_ACCELERATION - min else max - EARTH_ACCELERATION)
     return { i ->
         if (accRead <= EARTH_ACCELERATION) (accRead > EARTH_ACCELERATION - (i + 1) * (diff / MAX_RATE))
         else (accRead < EARTH_ACCELERATION + (i + 1) * (diff / MAX_RATE))
