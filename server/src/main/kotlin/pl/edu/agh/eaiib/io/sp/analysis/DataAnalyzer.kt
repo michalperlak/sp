@@ -46,6 +46,7 @@ class ClassifierConfiguration {
     private fun buildClassifier(trainingSet: Instances): WekaClassifier {
         val classifier = SMO()
         classifier.kernel = RBFKernel(trainingSet, kernelCacheSize, kernelGammaFactor)
+        classifier.buildClassifier(trainingSet)
         return classifier
     }
 
