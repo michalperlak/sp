@@ -5,6 +5,7 @@ import org.apache.commons.math3.transform.DftNormalization
 import org.apache.commons.math3.transform.FastFourierTransformer
 import org.apache.commons.math3.transform.TransformType
 
+
 data class DataWindowFeatures(val mean: Double,
                               val absMean: Double,
                               val variance: Double,
@@ -46,7 +47,7 @@ fun minMaxAbsSum(values: DoubleArray): Double {
 
 fun energy(values: DoubleArray): Double {
     val transformer = FastFourierTransformer(DftNormalization.STANDARD)
-    val fft = transformer.transform(values, TransformType.FORWARD)
+    val fft = transformer.transform(fillToPowerOfTwo(values), TransformType.FORWARD).take(values.size)
 
     val sum = fft.map { Math.pow(it.abs(), 2.0) }.sum()
     return sum / fft.size
@@ -54,7 +55,7 @@ fun energy(values: DoubleArray): Double {
 
 fun entropy(values: DoubleArray): Double {
     val transformer = FastFourierTransformer(DftNormalization.STANDARD)
-    val fft = transformer.transform(values, TransformType.FORWARD)
+    val fft = transformer.transform(fillToPowerOfTwo(values), TransformType.FORWARD).take(values.size)
 
     val powerSpectrumSum = fft.map { powerSpectrum(it) }.sum()
     val powerSpectrumDistribution = fft.map { powerSpectrum(it) / powerSpectrumSum }
@@ -62,3 +63,25 @@ fun entropy(values: DoubleArray): Double {
 }
 
 fun powerSpectrum(fft: Complex): Double = Math.pow(fft.abs(), 2.0)
+
+private fun fillToPowerOfTwo(values: DoubleArray): DoubleArray {
+    val nextPowerOfTwo = nextPowerOfTwo(values.size)
+    if (nextPowerOfTwo == values.size) {
+        return values
+    }
+
+    val result = DoubleArray(nextPowerOfTwo)
+    for (i in 0 until nextPowerOfTwo) {
+        result[i] = if (i < values.size) values[i] else 0.0
+    }
+
+    return result
+}
+
+private fun nextPowerOfTwo(number: Int): Int {
+    var result = 1
+    while (result < number) {
+        result *= 2
+    }
+    return result
+}

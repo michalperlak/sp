@@ -6,7 +6,6 @@ import pl.edu.agh.eaiib.io.sp.common.model.ProcessedData
 import pl.edu.agh.eaiib.io.sp.repositories.ProcessedDataRepository
 import pl.edu.agh.eaiib.io.sp.repositories.ReadingsRepository
 import pl.edu.agh.eaiib.io.sp.utils.evaluate
-import java.util.stream.Collectors
 
 @Service
 class ProcessorService(private val processedDataRepository: ProcessedDataRepository,
@@ -30,15 +29,15 @@ class ProcessorService(private val processedDataRepository: ProcessedDataReposit
 
     fun processData(deviceId: String, start: Long) {
         val readingList = readingsRepository.findAll()
-        val readingStream = readingList.stream()
-                .filter { (deviceId1) -> deviceId1 == deviceId }
-                .filter { x -> x.timestamp >= start }
+        val readingSequence = readingList.asSequence()
+                .filter { it.deviceId == deviceId }
+                .filter { it.timestamp >= start }
 
-        val min = readingStream.mapToDouble { x -> x.accelerometer[2] }.min().orElse(0.0)
-        val max = readingStream.mapToDouble { x -> x.accelerometer[2] }.max().orElse(20.0)
+        val min = readingSequence.map { x -> x.accelerometer[2] }.min() ?: 0.0
+        val max = readingSequence.map { x -> x.accelerometer[2] }.max() ?: 20.0
 
-        val processedDataList = readingStream.map { x -> ProcessedData(x.location, evaluate(x.accelerometer[2], min, max)) }
-                .collect(Collectors.toList())
+        val processedDataList = readingSequence.map { x -> ProcessedData(x.location, evaluate(x.accelerometer[2], min, max)) }
+                .toList()
 
         processedDataRepository.saveAll(processedDataList)
     }
