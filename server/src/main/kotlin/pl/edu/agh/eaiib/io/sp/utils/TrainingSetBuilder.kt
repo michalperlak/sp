@@ -1,5 +1,6 @@
 package pl.edu.agh.eaiib.io.sp.utils
 
+import org.apache.commons.math3.stat.descriptive.rank.Median
 import pl.edu.agh.eaiib.io.sp.analysis.computeFeatures
 import weka.core.Attribute
 import weka.core.DenseInstance
@@ -47,8 +48,12 @@ fun createTrainingData(rows: Int): Instances {
 private fun generateValues(rows: Int): List<DoubleArray> {
     return IntRange(0, rows - 1)
             .asSequence()
-            .map { listOf(randomRead(), randomRead(), randomRead(), randomRead()).toDoubleArray() }
+            .map { randomArray(1000) }
             .toList()
+}
+
+private fun randomArray(size: Int): DoubleArray {
+    return IntRange(0, size - 1).map { randomRead() }.toDoubleArray()
 }
 
 private fun randomRead(): Double {
@@ -58,7 +63,8 @@ private fun randomRead(): Double {
 private fun getClassValue(values: DoubleArray): Int {
     val min = values.min()!!
     val max = values.max()!!
-    val rate = values.map { evaluate(it, min, max) }.average()
+    val median = Median()
+    val rate = evaluate(median.evaluate(values), min, max)
 
     if (rate >= HIGHEST_RATE_THRESHOLD) {
         return HIGHEST_RATE
@@ -85,8 +91,8 @@ private fun createAttributes(): ArrayList<Attribute> = arrayListOf(
         Attribute("entropy"),
         Attribute("quality", listOf("1", "2", "3")))
 
-private const val MIN_RANDOM_READ = 8.0
-private const val MAX_RANDOM_READ = 11.0
+private const val MIN_RANDOM_READ = 10.0
+private const val MAX_RANDOM_READ = 12.5
 
 private const val HIGHEST_RATE_THRESHOLD = 9.0
 private const val AVERAGE_RATE_THRESHOLD = 6.0
