@@ -31,7 +31,7 @@ class SensorDataCollector(private val sensorManager: SensorManager,
         }
 
         try {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 0.01f, handler)
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 0.01f, handler)
         } catch (e: SecurityException) {
             Log.d("SecurityException", e.localizedMessage)
         }
@@ -76,6 +76,7 @@ class DefaultSensorEventHandler(private val dataCollector: SensorDataCollector) 
         }
 
         this.location = ModelLocation(location.longitude, location.latitude)
+        this.gyroscopeData = SensorData(Sensor.TYPE_GYROSCOPE, listOf(0.0f, 0.0f, 0.0f))
     }
 
     override fun handle(sensorEvent: SensorEvent) {
@@ -118,10 +119,6 @@ class DefaultSensorEventHandler(private val dataCollector: SensorDataCollector) 
                 gyroscope.values.map { it.toDouble() }, location)
 
         dataCollector.collectData(reading)
-
-        accelerometerData = null
-        gyroscopeData = null
-        this.location = null
     }
 }
 

@@ -1,5 +1,6 @@
 package pl.edu.agh.eaiib.io.sp.rest
 
+import android.util.Log
 import io.reactivex.Flowable
 import pl.edu.agh.eaiib.io.sp.services.ServicesUtil
 import pl.edu.agh.eaiib.io.sp.android.AndroidNetworkHelper
@@ -51,13 +52,17 @@ abstract class AbstractPublisher<in T>(config: Configuration) : NetworkAvailabil
     }
 
     private fun tryPublishData() {
-        if (!networkAvailable || publishQueue.isEmpty()) {
-            return
-        }
+        try {
+            if (!networkAvailable || publishQueue.isEmpty()) {
+                return
+            }
 
-        val data = publishQueue.poll()
-        val result = publish(api, data)
-        result.subscribe()
+            val data = publishQueue.poll()
+            val result = publish(api, data)
+            result.subscribe()
+        } catch (e: Exception) {
+            Log.d("Exception thrown: ", e.message)
+        }
     }
 
     abstract fun publish(api: Api, data: T): Flowable<Any>
