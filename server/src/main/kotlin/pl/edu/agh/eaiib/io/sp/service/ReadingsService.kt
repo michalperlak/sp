@@ -11,6 +11,10 @@ class ReadingsService(private val repository: ReadingsRepository) {
         return repository.save(reading)
     }
 
+    fun addAll(readings: Collection<Reading>): Collection<Reading> {
+        return repository.saveAll(readings)
+    }
+
     fun getAll(): List<Reading> {
         return repository.findAll()
     }
