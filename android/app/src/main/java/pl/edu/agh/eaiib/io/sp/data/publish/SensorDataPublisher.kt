@@ -1,5 +1,6 @@
 package pl.edu.agh.eaiib.io.sp.data.publish
 
+import android.util.Log
 import io.reactivex.Flowable
 import pl.edu.agh.eaiib.io.sp.common.model.Reading
 import pl.edu.agh.eaiib.io.sp.common.model.ReadingsBatch
@@ -11,19 +12,27 @@ import java.util.concurrent.ConcurrentLinkedQueue
 
 class SensorDataPublisher(config: Configuration) : AbstractPublisher<Reading>(config) {
     private val elementsToPublish = ConcurrentLinkedQueue<Reading>()
-    private val lastPublishMillis = System.currentTimeMillis()
+    private var lastPublishMillis = System.currentTimeMillis()
 
     override fun publish(api: Api, data: Reading): Flowable<Any> {
+        elementsToPublish.add(data)
         val currentTime = System.currentTimeMillis()
         if (currentTime - lastPublishMillis < MIN_INTERVAL) {
-            elementsToPublish.add(data)
+            return Flowable.empty()
         }
 
+        lastPublishMillis = System.currentTimeMillis()
         val elements = elementsToPublish.toList()
         elementsToPublish.clear()
 
-        val readingsBatch = ReadingsBatch(Configuration.deviceId, ReadingsBatchEncoder.encode(elements))
-        return api.addReadingsBatch(readingsBatch)
+        try {
+            val readingsBatch = ReadingsBatch(Configuration.deviceId, ReadingsBatchEncoder.encode(elements))
+            return api.addReadingsBatch(readingsBatch)
+        } catch (e: Throwable) {
+            e.printStackTrace()
+        }
+
+        return Flowable.empty()
     }
 }
 

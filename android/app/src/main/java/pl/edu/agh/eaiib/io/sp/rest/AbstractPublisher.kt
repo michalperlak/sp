@@ -18,7 +18,7 @@ abstract class AbstractPublisher<in T>(config: Configuration) : NetworkAvailabil
         val thread = Thread(runnable)
         thread.isDaemon = true
         thread
-    }
+    }!!
 
     private var publishEnabled = true
     private var networkAvailable = ServicesUtil.getService(AndroidNetworkHelper::class.java).isNetworkAvailable()
