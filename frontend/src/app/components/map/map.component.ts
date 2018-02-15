@@ -14,7 +14,7 @@ export class MapComponent implements OnInit {
 
   location = new Location(19.9449799, 50.0646501);
 
-  readings: Array<Reading> = [];
+  paths: Array<Path> = [];
   comments: Array<Comment> = [];
 
   constructor(private readingsService: ReadingsService,
@@ -23,15 +23,45 @@ export class MapComponent implements OnInit {
 
   ngOnInit() {
     this.readingsService.getReadings().subscribe(readings => {
-      this.readings = readings.filter(reading => {
-        return this.location.distance(reading.location) <= 5;
+      let filteredReadings = readings.filter(reading => {
+        return Location.distance(this.location, reading.location) <= 5;
       });
+
+      let path: Array<Reading> = [];
+      let prevReading: Reading;
+      for (let i = 0; i < filteredReadings.length; i++) {
+        if (!prevReading || this.distance(prevReading, filteredReadings[i])) {
+          path.push(filteredReadings[i]);
+        } else {
+          this.paths.push(new Path(path));
+          path = [];
+          path.push(filteredReadings[i]);
+        }
+
+        prevReading = filteredReadings[i];
+      }
+
+      console.log(this.paths);
+
     });
 
     this.commentsService.getComments().subscribe(comments => {
       this.comments = comments.filter(comment => {
-        return this.location.distance(comment.location) <= 5;
+        return Location.distance(this.location, comment.location) <= 5;
       });
     });
+  }
+
+  private distance(reading1: Reading, reading2: Reading): number {
+    if (!reading1 || !reading2) {
+      return 0;
+    }
+
+    return Location.distance(reading1.location, reading2.location);
+  }
+}
+
+class Path {
+  constructor(public readings: Array<Reading>) {
   }
 }

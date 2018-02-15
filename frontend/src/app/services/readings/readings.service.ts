@@ -6,7 +6,7 @@ import {Observable} from 'rxjs/Observable';
 @Injectable()
 export class ReadingsService {
 
-  private readingsApi = 'http://mikepq.nazwa.pl:9090/api/readings';
+  private readingsApi = 'http://mikepq.nazwa.pl:9090/api/readings?limit=1000';
 
   constructor(private httpClient: HttpClient) {
   }

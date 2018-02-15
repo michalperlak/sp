@@ -1,11 +1,13 @@
 <agm-map [latitude]="location.latitude" [longitude]="location.longitude" [zoom]="12" [scrollwheel]="false">
-  <agm-polyline [strokeColor]="'red'" [strokeWeight]="5">
-    <ng-container *ngFor="let reading of readings">
-      <agm-polyline-point [longitude]="reading.location.longitude"
-                          [latitude]="reading.location.latitude">
-      </agm-polyline-point>
-    </ng-container>
-  </agm-polyline>
+  <ng-container *ngFor="let path of paths">
+    <agm-polyline [strokeColor]="'red'" [strokeWeight]="5">
+      <ng-container *ngFor="let reading of path.readings">
+        <agm-polyline-point [longitude]="reading.location.longitude"
+                            [latitude]="reading.location.latitude">
+        </agm-polyline-point>
+      </ng-container>
+    </agm-polyline>
+  </ng-container>
 
   <agm-marker *ngFor="let comment of comments"
               [longitude]="comment.location.longitude"

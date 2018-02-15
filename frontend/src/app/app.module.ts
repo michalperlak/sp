@@ -33,7 +33,7 @@ const appRoutes: Routes = [
     FormsModule,
     HttpClientModule,
     AgmCoreModule.forRoot({
-      apiKey: ''
+      apiKey: 'AIzaSyDQqOVuwHktKl2UMoIaFuT37k2qaGRQq6Y'
     }),
     ChartsModule
   ],
