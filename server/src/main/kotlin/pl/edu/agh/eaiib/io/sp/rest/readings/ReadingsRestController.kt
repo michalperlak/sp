@@ -20,7 +20,12 @@ class ReadingsRestController(private val readingsService: ReadingsService) {
     }
 
     @GetMapping
-    fun getAllReadings(): List<Reading> {
+    fun getAllReadings(@RequestParam(required = false) limit: Int?): List<Reading> {
+
+        if (limit != null && limit > 0) {
+            return readingsService.getAll().takeLast(limit)
+        }
+
         return readingsService.getAll()
     }
 }
